@@ -2,8 +2,8 @@
 
 <html>
 <head>
-    <link rel="icon" href="http://user:xyz@demosocialservice.org:8888/icon.png"/>
-    <title>Test Service Window</title>
+    <link id="siteicon" rel="icon" href="/icon.png"/>
+    <title>Me!</title>
     <script>
       function onLoad() {
         var worker = navigator.mozSocial.getWorker();
@@ -24,6 +24,32 @@
 //window.setTimeout(function () {
 //  window.location = "http://www.google.com";
 //}, 5000)
+      
+      var origTitle = document.title;
+      var counter = 0;
+      function changeTitle() {
+        document.title = origTitle + "("+(++counter)+")";
+      }
+      function changeSiteIcon() {
+        var icon = document.getElementById("siteicon");
+        icon.parentNode.removeChild(icon);
+        if (icon.getAttribute("href")== "/icon.png")
+          icon.setAttribute("href", "/message.png");
+        else
+          icon.setAttribute("href", "/icon.png");
+        document.getElementsByTagName('head')[0].appendChild(icon);
+      }
+
+      function notifyActivity() {
+        changeSiteIcon();
+        changeTitle();
+        var evt = document.createEvent("CustomEvent");
+        evt.initCustomEvent("chatActivity", true, true, {});
+        document.documentElement.dispatchEvent(evt);
+      }
+      function startActivity() {
+        window.setInterval(notifyActivity, 3000);
+      }
     </script>
 </head>
 
@@ -31,6 +57,7 @@
 <div>
 <input />
 <button onclick="close()">close it</button>
+<button onclick="startActivity()">start activity interval</button>
 </div>
 </body>
 </html>
