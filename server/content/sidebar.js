@@ -1,5 +1,15 @@
 var port = navigator.mozSocial.getWorker().port;
 
+function onLoad() {
+  var worker = navigator.mozSocial.getWorker();
+  if (worker) {
+    document.body.style.border = "3px solid green";
+    worker.port.postMessage({topic: "broadcast.listen", data: true});
+  } else {
+    document.body.style.border = "3px solid red";
+  }
+}
+
 function signin() {
   var userdata = {
     portrait: "/user.png",
@@ -7,12 +17,14 @@ function signin() {
     dispayName: "Bucko Matey",
     profileURL: "/index.html"
   }
-  port.postMessage({topic: "send.user-profile", data: userdata});
+  document.cookie="userdata="+JSON.stringify(userdata);
+  //port.postMessage({topic: "send.user-profile", data: userdata});
 }
 
 function signout() {
   // send an empty user object to signal a signout to firefox
-  port.postMessage({topic: "send.user-profile", data: {}});
+  document.cookie="userdata=";
+  //port.postMessage({topic: "send.user-profile", data: {}});
 }
 
 function userIsConnected(userdata)
@@ -51,7 +63,7 @@ messageHandlers = {
 };
 
 navigator.mozSocial.getWorker().port.onmessage = function(e) {
-    dump("Got message: " + e.data.topic + " " + e.data.data +"\n");
+    //dump("Got message: " + e.data.topic + " " + e.data.data +"\n");
     var topic = e.data.topic;
     var data = e.data.data;
     if (messageHandlers[topic])

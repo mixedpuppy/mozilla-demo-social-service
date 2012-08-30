@@ -9,6 +9,7 @@
         var worker = navigator.mozSocial.getWorker();
         if (worker) {
           document.body.style.background = "green";
+          worker.port.postMessage({topic: "broadcast.listen", data: true});
         } else {
           document.body.style.background = "red";
         }

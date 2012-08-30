@@ -18,7 +18,7 @@ function broadcast(topic, payload)
 {
   // we need to broadcast to all ports connected to this shared worker
   for (var i = 0; i < _broadcastReceivers.length; i++) {
-    log("about to broadcast to " + _broadcastReceivers[i]);
+    //log("about to broadcast to " + _broadcastReceivers[i]);
   _broadcastReceivers[i].postMessage({topic: topic, data: payload});
   }
 }
@@ -27,11 +27,8 @@ function broadcast(topic, payload)
 onconnect = function(e) {
   try {
     var port = e.ports[0];
-    _broadcastReceivers.push(port);
-    log("worker onconnect - now " + _broadcastReceivers.length + " connections.");
-
     port.onmessage = function(e) {
-      log("worker onmessage: " + JSON.stringify(e.data));
+      //log("worker onmessage: " + JSON.stringify(e.data));
 
       var msg = e.data;
       if (!msg) {
@@ -68,40 +65,76 @@ onconnect = function(e) {
   }
 }
 
-
+var userData = {};
 // Messages from the sidebar and chat windows:
 var handlers = {
   'social.initialize': function(port, data) {
     log("social.initialize called, capturing apiPort");
     apiPort = port;
   },
-  'send.user-profile': function(port, data) {
-    // send our user account to firefox
-    data.topic = "social.user-profile";
-    apiPort.postMessage(data);
-    
-    broadcast('social.user-profile', data.data);
-    // tell the UI there is a status panel
-    if (data.data.userName)
-      broadcast('social.ambient-notification',
-            {
-              name: "test",
-              iconURL: RECOMMEND_ICON,
-              counter: "10",
-              contentPanel: "/statusPanel.html"
-            });
+  'broadcast.listen': function(port, data) {
+    if (data)
+      _broadcastReceivers.push(port);
+    else {
+      var i = _broadcastReceivers.indexOf(port);
+      f (i != -1)
+        _broadcastReceivers.splice(i, 1);
+    }
   },
 
-  'social.user-recommend': function(port, data) {
-    log("demosocial got recommend request for " + data.url);
-    broadcast(data.topic, data);
+  'social.user-recommend': function(port, msg) {
+    log("demo worker got recommend request for " + msg.data.url);
+    // tell our content
+    broadcast(msg.topic, msg.data);
   },
-  'social.user-recommend-prompt': function(port, data) {
+  'social.user-unrecommend': function(port, msg) {
+    log("demo worker got unrecommend request for " + msg.data.url);
+    // tell our content
+    broadcast(msg.topic, msg.data);
+  },
+  'social.user-recommend-prompt': function(port, msg) {
     port.postMessage({topic: 'social.user-recommend-prompt-response',
             data: {
-            message: "Recommend to DemoSocialService",
-            img: RECOMMEND_ICON
+              messages: {
+                'shareTooltip': "Recommend this site",
+                'unshareTooltip': "Remove recommendation",
+                'sharedLabel': "Love It!",
+                'unsharedLabel': "Hate It!"
+              },
+              images: {
+                'share': RECOMMEND_ICON,
+                'unshare': RECOMMEND_ICON
+              }
             }
-           });
+          });
+  },
+  'social.cookies-get-response': function(port, msg) {
+    let cookies = msg.data;
+    let newUserData;
+    for (var i=0; i < cookies.length; i++) {
+      if (cookies[i].name == "userdata") {
+        newUserData = cookies[i].value ? JSON.parse(cookies[i].value) : {};
+        break;
+      }
+    }
+    if (userData.userName != newUserData.userName) {
+      userData = newUserData;
+      port.postMessage({topic: "social.user-profile", data: userData});
+      broadcast('social.user-profile', userData);
+      if (userData.userName)
+        port.postMessage({topic: 'social.ambient-notification',
+              data: {
+                name: "test",
+                iconURL: RECOMMEND_ICON,
+                counter: "10",
+                contentPanel: "/statusPanel.html"
+              }});
+    }
   }
 }
+
+// lets watch for cookie updates here, polling kinda sucks
+function checkCookies() {
+  apiPort.postMessage({topic: 'social.cookies-get'});  
+}
+setInterval(checkCookies, 1000);
