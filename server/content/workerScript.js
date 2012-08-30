@@ -1,2 +1,2 @@
 
-dump("\n\n\nHELLO WORKER WORLD\n\n\n");
+dump("~~~~ worker library loaded\n");
