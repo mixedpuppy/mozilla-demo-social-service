@@ -3,38 +3,9 @@
 	<title>Demo Social Service</title>
 </head>
 <link rel="manifest" type="text/json" href="manifest.json"></link>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="https://login.persona.org/include.js" type="text/javascript"></script>
-<script>
-function signin() {
-  navigator.id.get(function(assertion) {
-    try {
-      navigator.mozSocial.getWorker().port.post({cmd:"connect", assertion:assertion});
-      createSocket(assertion);
-    } catch (e) {
-      console.log("Error creating socket: " + e);
-    }
-  })
-}
 
-navigator.mozSocial.getWorker().port.onmessage = function(e) {
-	var topic = e.data.topic;
-	var data = e.data.data;
-	if (messageHandlers[topic])
-		messageHandlers[topic](data);
-};
-
-messageHandlers = {
-
-};
-
-</script>
 <body>
 
-<div id="signin">
-	<a href="javascript:signin()"><img src="https://developer.mozilla.org/files/3967/plain_sign_in_black.png"></a>
-	<div id="signin_error"></div>
-</div>
-
+nothing to see here
 </body>
 </html>
