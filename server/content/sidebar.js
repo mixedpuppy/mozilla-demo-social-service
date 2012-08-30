@@ -5,7 +5,7 @@ function signin() {
     portrait: "/user.png",
     userName: "matey",
     dispayName: "Bucko Matey",
-    profileURL: "/user.html"
+    profileURL: "/index.html"
   }
   port.postMessage({topic: "send.user-profile", data: userdata});
 }
