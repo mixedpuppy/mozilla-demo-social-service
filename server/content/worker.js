@@ -88,7 +88,7 @@ var handlers = {
               name: "test",
               iconURL: RECOMMEND_ICON,
               counter: "10",
-              contentPanel: "/serviceWindow.html"
+              contentPanel: "/statusPanel.html"
             });
   },
 
