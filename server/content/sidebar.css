@@ -63,12 +63,3 @@ BODY {
 #content {
   padding-top:4px;
 }
-
-.nobodyHere {
-	font-size:10px;
-	font-family:"Lucida Grande",Tahoma,sans-serif;
-	top:10px;
-	left:38px;
-	overflow:hidden;
-}
-
