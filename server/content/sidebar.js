@@ -15,10 +15,10 @@ function onLoad() {
 
 function signin() {
   var userdata = {
-    portrait: "/user.png",
+    portrait: location.protocol + "//" + location.host + "/user.png",
     userName: "matey",
     dispayName: "Bucko Matey",
-    profileURL: "/index.html"
+    profileURL: location.protocol + "//" + location.host + "/index.html"
   }
   document.cookie="userdata="+JSON.stringify(userdata);
   //port.postMessage({topic: "send.user-profile", data: userdata});

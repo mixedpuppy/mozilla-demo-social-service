@@ -127,7 +127,7 @@ var handlers = {
                 name: "test",
                 iconURL: RECOMMEND_ICON,
                 counter: "10",
-                contentPanel: "/statusPanel.html"
+                contentPanel: location.protocol + "//" + location.host + "/statusPanel.html"
               }});
     }
   }
